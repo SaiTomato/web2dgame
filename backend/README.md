@@ -23,7 +23,7 @@ Connect using Socket.IO client:
 ```javascript
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');
+w
 
 socket.on('connect', () => {
   console.log('Connected to game server!');

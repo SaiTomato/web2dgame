@@ -7,6 +7,8 @@ import { GameService } from './game.service';
   cors: {
     origin: '*',
   },
+  // Add this line to ensure the handshake is stable over the tunnel
+  transports: ['websocket'], 
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
