@@ -8,6 +8,7 @@
 cd project-name
 npm install
 npm run start:dev
+npm i --save @nestjs/websockets @nestjs/platform-socket.io
 ```
 
 Server runs on `http://localhost:3000`
