@@ -6,7 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // Enable CORS so your friend's browser doesn't block the request
-  app.enableCors();
+  app.enableCors({
+    origin: "https://hemimetabolous-nonreciprocally-lisandra.ngrok-free.dev", // Your specific Ngrok URL
+    credentials: true,
+  });
 
   const server = app.getHttpServer();
   app.useWebSocketAdapter(new IoAdapter(server));

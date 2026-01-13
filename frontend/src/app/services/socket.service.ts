@@ -8,7 +8,7 @@ export class SocketService {
   connect() {
     if (this.socket) return;
 
-    this.socket = io('http://localhost:3000', {
+    this.socket = io('https://many-breads-add.loca.lt', {
       transports: ['websocket'],
     });
   }
