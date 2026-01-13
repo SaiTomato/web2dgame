@@ -19,6 +19,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     handleConnection(client: any, ...args: any[]){
         console.log('クライアントが接続しました:', client.id);
         this.gameService.addPlayer(client.id, {id: client.id, x:0, y:0});
+        // client.emit('initPlayers', {
+        //     selfId: client.id,
+        //     players: this.gameService.getAllPlayers(),
+        // });
     }
 
     handleDisconnect(client: any){
