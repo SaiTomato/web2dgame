@@ -1,4 +1,8 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { GameService } from './game.service';
@@ -8,48 +12,41 @@ import { GameService } from './game.service';
     origin: '*',
   },
   // Add this line to ensure the handshake is stable over the tunnel
-  transports: ['websocket'], 
+  transports: ['websocket'],
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    @WebSocketServer()
-    server: Server;
+  @WebSocketServer()
+  server: Server;
 
-    constructor(private gameService: GameService){}
+  constructor(private gameService: GameService) {}
 
-    handleConnection(client: any, ...args: any[]){
-        console.log('クライアントが接続しました:', client.id);
-        this.gameService.addPlayer(client.id, {id: client.id, x:0, y:0});
-        // client.emit('initPlayers', {
-        //     selfId: client.id,
-        //     players: this.gameService.getAllPlayers(),
-        // });
-    }
+  handleConnection(client: any, ...args: any[]) {
+    console.log('クライアントが接続しました:', client.id);
+    this.gameService.addPlayer(client.id, { id: client.id, x: 0, y: 0 });
+    // client.emit('initPlayers', {
+    //     selfId: client.id,
+    //     players: this.gameService.getAllPlayers(),
+    // });
+  }
 
-    handleDisconnect(client: any){
-        console.log('クライアントが切断しました:', client.id);
-        this.gameService.removePlayer(client.id);
-    }
+  handleDisconnect(client: any) {
+    console.log('クライアントが切断しました:', client.id);
+    this.gameService.removePlayer(client.id);
+  }
 
-    @SubscribeMessage('playerMove')
-    handleMovement(client: any, payload: any) {
-        console.log('クライアントからの移動メッセージ:', payload);
-        this.gameService.updatePlayer(client.id, payload.x, payload.y);
-        this.server.emit('playerMove', {
-            clientId: client.id,
-            payload
-        });
-    }
+  @SubscribeMessage('playerMove')
+  handleMovement(client: any, payload: any) {
+    console.log('クライアントからの移動メッセージ:', payload);
+    this.gameService.updatePlayer(client.id, payload.x, payload.y);
+  }
 
-    @SubscribeMessage('chat')
-    handleMessage(client: any, payload: any) {
-        console.log('クライアントからのチャットメッセージ:', payload);
-        
-        this.server.emit('chat', {
-            clientId: client.id,
-            payload
-        });
-    }
+  @SubscribeMessage('chat')
+  handleMessage(client: any, payload: any) {
+    console.log('クライアントからのチャットメッセージ:', payload);
+
+    this.server.emit('chat', {
+      clientId: client.id,
+      payload,
+    });
+  }
 }
-
-
-
