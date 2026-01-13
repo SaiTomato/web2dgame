@@ -9,11 +9,7 @@ import { bindSocketEvents } from '@/app/services/socket-events';
   styleUrl: './game-page.component.css',
 })
 export class GamePageComponent implements AfterViewInit, OnDestroy {
-
-  // ngOnInit() {
-  //   startGame('game-container');
-  // }
-
+  
   constructor(private socket: SocketService) {}
 
   @ViewChild('gameContainer', { static: true })

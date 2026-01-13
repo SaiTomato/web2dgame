@@ -10,4 +10,8 @@ export function bindSocketEvents(socket: SocketService) {
   socket.on('playerMove', data => {
     gameEvents.emit('player-move', data);
   });
+
+  gameEvents.on('send-player-move', payload => {
+    socket.emit('playerMove', payload);
+  });
 }

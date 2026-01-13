@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { gameEvents } from '@/game/events';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
@@ -11,14 +10,6 @@ export class SocketService {
 
     this.socket = io('http://localhost:3000', {
       transports: ['websocket'],
-    });
-
-    this.socket.on('initPlayers', (data) => {
-      gameEvents.emit('init-players', data);
-    });
-
-    this.socket.on('playerMove', (data) => {
-      gameEvents.emit('player-move', data);
     });
   }
 
