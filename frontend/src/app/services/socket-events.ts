@@ -1,0 +1,13 @@
+import { SocketService } from '@/app/services/socket.service';
+import { gameEvents } from '@/game/events';
+
+export function bindSocketEvents(socket: SocketService) {
+
+  socket.on('initPlayers', data => {
+    gameEvents.emit('init-players', data);
+  });
+
+  socket.on('playerMove', data => {
+    gameEvents.emit('player-move', data);
+  });
+}

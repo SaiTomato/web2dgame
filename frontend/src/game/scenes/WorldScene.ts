@@ -9,16 +9,32 @@ export class WorldScene extends Phaser.Scene {
         super('world');
     }
 
-    private onInitPlayers = (data: any) => {
-        console.log('收到初始玩家数据', data);
-    };
+    private myId!: string;
+    private players = new Map<string, Player>();
 
-    private onPlayerMove = (data: any) => {
-        console.log('有玩家移动', data);
+    private onInitPlayers = (data: any) => {
+        this.myId = data.selfId;
+
+        data.players.forEach((p: any) => {
+            const isSelf = p.id === this.myId;
+
+            const player = new Player(
+            this,
+            p.x,
+            p.y,
+            isSelf        // 👈 只有自己能动
+            );
+
+            this.players.set(p.id, player);
+
+            if (isSelf) {
+                this.player = player; // 👈 关键！
+            }
+        });
     };
 
     create() {
-        this.player = new Player(this, 400, 300);
+        // this.player = new Player(this, 400, 300);
 
         gameEvents.on('init-players', this.onInitPlayers);
         gameEvents.on('player-move', this.onPlayerMove);
@@ -30,8 +46,23 @@ export class WorldScene extends Phaser.Scene {
         );
     }
 
+    private onPlayerMove = ({ clientId, payload }: any) => {
+        if (clientId === this.myId) return;
+
+        const player = this.players.get(clientId);
+        player?.setPosition(payload.x, payload.y);
+    }
+
     override update() {
-        this.player.update();
+        if (!this.player) return;
+        const moved = this.player.update();
+
+        if (moved) {
+            gameEvents.emit('send-player-move', {
+            x: this.player.x,
+            y: this.player.y,
+            });
+        }
     }
 
     private onShutdown() {
