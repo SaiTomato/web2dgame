@@ -62,8 +62,7 @@
               "buildTarget": "frontend:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development",
-              "allowedHosts": ["hemimetabolous-nonreciprocally-lisandra.ngrok-free.dev"] 
+              "buildTarget": "frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
