@@ -14,7 +14,7 @@ import { GameLog } from './entities/log.entity';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: '(passwordここに入れてください)',
+      password: 'tomato123',
       database: 'log_game',
       entities: [GameLog],
       synchronize: true,
