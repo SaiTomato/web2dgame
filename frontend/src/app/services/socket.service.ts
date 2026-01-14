@@ -8,7 +8,11 @@ export class SocketService {
   connect() {
     if (this.socket) return;
 
-    this.socket = io('http://192.168.100.79:3000', {
+    const protocol = window.location.protocol; // http:
+    const hostname = window.location.hostname; // localhost / 192.168.x.x
+    const port = 3000;
+
+    this.socket = io(`${protocol}//${hostname}:${port}`, {
       transports: ['websocket'],
     });
   }
