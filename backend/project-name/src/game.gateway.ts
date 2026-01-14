@@ -2,6 +2,10 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { GameService } from './game.service';
+import { Inject } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GameLog } from './entities/log.entity';
+import { Repository } from 'typeorm';
 
 @WebSocketGateway({
     cors: {
@@ -10,15 +14,25 @@ import { GameService } from './game.service';
     // Add this line to ensure the handshake is stable over the tunnel
     transports: ['websocket'],
 })
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    {
     @WebSocketServer()
     server: Server;
 
-    constructor(private gameService: GameService) { }
+    constructor(
+        private gameService: GameService,
+        @InjectRepository(GameLog)
+        private gameLogRepository: Repository<GameLog>,
+    ) { }
 
-    handleConnection(client: any, ...args: any[]) {
+    async handleConnection(client: any, ...args: any[]) {
         console.log('クライアントが接続しました:', client.id);
-        console.log('現在時刻:', new Date()); // Kept from your local change
+
+        const log=this.gameLogRepository.create({
+            clientId: client.id,
+            action: 'connect',
+        });
+
+        await this.gameLogRepository.save(log);
 
         this.gameService.addPlayer(client.id, { id: client.id, x: 0, y: 0 });
 
@@ -28,7 +42,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             players: this.gameService.getAllPlayers(),
         });
 
-        console.log('已发送 initPlayers', client.id);
+        console.log('initPlayers送信済み', client.id);
     }
     
     handleDisconnect(client: any) {
@@ -41,6 +55,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage('playerMove')
     handleMovement(client: any, payload: any) {
         console.log('クライアントからの移動メッセージ:', payload);
+
+        const log=this.gameLogRepository.create({
+            clientId: client.id,
+            action: 'playerMove',
+            payload,
+        });
+
+        this.gameLogRepository.save(log);
+
         this.gameService.updatePlayer(client.id, payload.x, payload.y);
         this.server.emit('playerMove', {
             clientId: client.id,
@@ -49,8 +72,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage('chat')
-    handleMessage(client: any, payload: any) {
+    asynchandleMessage(client: any, payload: any) {
         console.log('クライアントからのチャットメッセージ:', payload);
+
+        const log=this.gameLogRepository.create({
+            clientId: client.id,
+            action: 'chat',
+            payload,
+        });
+
+        this.gameLogRepository.save(log);
 
         this.server.emit('chat', {
             clientId: client.id,
