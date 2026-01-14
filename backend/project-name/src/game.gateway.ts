@@ -42,6 +42,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
             players: this.gameService.getAllPlayers(),
         });
 
+        client.broadcast.emit('playerJoined', {
+            player: {
+                id: client.id,
+                x: 0,
+                y: 0,
+            },
+        });
+
         console.log('initPlayers送信済み', client.id);
     }
     
@@ -50,6 +58,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
         console.log('現在時刻:', new Date());
 
         this.gameService.removePlayer(client.id);
+
+        this.server.emit('playerLeft', {
+            playerId: client.id,
+        });
     }
 
     @SubscribeMessage('playerMove')

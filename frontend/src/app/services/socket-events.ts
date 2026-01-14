@@ -14,4 +14,14 @@ export function bindSocketEvents(socket: SocketService) {
   gameEvents.on('send-player-move', payload => {
     socket.emit('playerMove', payload);
   });
+
+  // new player join
+  socket.on('playerJoined', data => {
+    gameEvents.emit('player-joined', data);
+  });
+
+  // any player left
+  socket.on('playerLeft', data => {
+    gameEvents.emit('player-left', data);
+  });
 }

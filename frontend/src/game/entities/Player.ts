@@ -49,6 +49,10 @@ export class Player {
     return moved;
   }
 
+  destroy() {
+    this.sprite.destroy();
+  }
+
   setPosition(x: number, y: number) {
     this.sprite.setPosition(x, y);
   }

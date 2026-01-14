@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from '@/game/entities/Player';
-import { gameEvents } from '../events';
+import { gameEvents, PlayerState } from '../events';
 
 export class WorldScene extends Phaser.Scene {
 
@@ -22,13 +22,13 @@ export class WorldScene extends Phaser.Scene {
             this,
             p.x,
             p.y,
-            isSelf        // 👈 只有自己能动
+            isSelf        // 👈 只有自己能动 only yourself can move
             );
 
             this.players.set(p.id, player);
 
             if (isSelf) {
-                this.player = player; // 👈 关键！
+                this.player = player; // 👈 关键！　point
             }
         });
     };
@@ -38,6 +38,8 @@ export class WorldScene extends Phaser.Scene {
 
         gameEvents.on('init-players', this.onInitPlayers);
         gameEvents.on('player-move', this.onPlayerMove);
+        gameEvents.on('player-joined', this.onPlayerJoined);
+        gameEvents.on('player-left', this.onPlayerLeft);
 
         this.events.once(
         Phaser.Scenes.Events.SHUTDOWN,
@@ -52,6 +54,21 @@ export class WorldScene extends Phaser.Scene {
         const player = this.players.get(clientId);
         player?.setPosition(payload.x, payload.y);
     }
+
+    private onPlayerJoined = ({ player }: { player: PlayerState }) => {
+        if (player.id === this.myId) return;
+
+        const newPlayer = new Player(this, player.x, player.y);
+        this.players.set(player.id, newPlayer);
+    };
+
+    private onPlayerLeft = ({ playerId }: { playerId: string }) => {
+        const player = this.players.get(playerId);
+        if (!player) return;
+
+        player.destroy();
+        this.players.delete(playerId);
+    };
 
     override update() {
         if (!this.player) return;
@@ -68,5 +85,7 @@ export class WorldScene extends Phaser.Scene {
     private onShutdown() {
         gameEvents.off('init-players', this.onInitPlayers);
         gameEvents.off('player-move', this.onPlayerMove);
+        gameEvents.off('player-joined', this.onPlayerJoined);
+        gameEvents.off('player-left', this.onPlayerLeft);
     }
 }
