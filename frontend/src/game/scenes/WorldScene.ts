@@ -1,10 +1,14 @@
 import Phaser from 'phaser';
 import { colorFromId, Player } from '@/game/entities/Player';
+import { Wall } from '@/game/entities/wall';
 import { gameEvents, PlayerState } from '../events';
+
 
 export class WorldScene extends Phaser.Scene {
 
     player!: Player;
+    private walls: Wall[] = [];
+
     constructor() {
         super('world');
     }
@@ -44,10 +48,17 @@ export class WorldScene extends Phaser.Scene {
         gameEvents.on('player-left', this.onPlayerLeft);
 
         this.events.once(
-        Phaser.Scenes.Events.SHUTDOWN,
-        this.onShutdown,
-        this
+            Phaser.Scenes.Events.SHUTDOWN,
+            this.onShutdown,
+            this
         );
+
+        this.time.addEvent({
+            delay: 2000, // 2秒ごとに
+            callback: this.spawnWall,
+            callbackScope: this,
+            loop: true,
+        });
     }
 
     private onPlayerMove = ({ clientId, payload }: any) => {
@@ -96,10 +107,13 @@ export class WorldScene extends Phaser.Scene {
 
         if (moved) {
             gameEvents.emit('send-player-move', {
-            x: this.player.x,
-            y: this.player.y,
+                x: this.player.x,
+                y: this.player.y,
             });
         }
+
+        //WALL
+        this.walls = this.walls.filter((wall) => wall.update());
     }
 
     private onShutdown() {
@@ -108,4 +122,12 @@ export class WorldScene extends Phaser.Scene {
         gameEvents.off('player-joined', this.onPlayerJoined);
         gameEvents.off('player-left', this.onPlayerLeft);
     }
+
+    private spawnWall() {
+        const x = 800;
+        const y = Phaser.Math.Between(50, 550);
+        const id = Date.now(); // Unique ID based on timestamp 
+        this.walls.push(new Wall(this, { id, x, y }));
+    }
 }
+
