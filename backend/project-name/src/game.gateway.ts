@@ -29,7 +29,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
 
         const log=this.gameLogRepository.create({
             clientId: client.id,
-            action: 'connect',
+            game: 'multiplayer',
+            teammateId: 'none',
+            enemyId: 'none',
+            HighScore: null,
         });
 
         await this.gameLogRepository.save(log);
@@ -64,40 +67,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
         });
     }
 
-    @SubscribeMessage('playerMove')
-    handleMovement(client: any, payload: any) {
-        console.log('クライアントからの移動メッセージ:', payload);
-
-        const log=this.gameLogRepository.create({
-            clientId: client.id,
-            action: 'playerMove',
-            payload,
-        });
-
-        this.gameLogRepository.save(log);
-
-        this.gameService.updatePlayer(client.id, payload.x, payload.y);
-        this.server.emit('playerMove', {
-            clientId: client.id,
-            payload
-        });
-    }
-
     @SubscribeMessage('chat')
     asynchandleMessage(client: any, payload: any) {
         console.log('クライアントからのチャットメッセージ:', payload);
 
         const log=this.gameLogRepository.create({
             clientId: client.id,
-            action: 'chat',
-            payload,
         });
 
         this.gameLogRepository.save(log);
 
         this.server.emit('chat', {
             clientId: client.id,
-            payload
+            game: 'multiplayer',
+            teammateId: 'none',
+            enemyId: 'none',
         });
     }
 }

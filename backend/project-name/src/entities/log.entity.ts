@@ -9,10 +9,16 @@ export class GameLog {
     clientId: string
 
     @Column()
-    action: string // e.g., 'move', 'chat', etc.
+    game: string // e.g., 'squidgame', 'flappybird', etc.
+
+    @Column()
+    teammateId: string
+
+    @Column()
+    enemyId: string
 
     @Column({ type: 'json', nullable: true })
-    payload: any
+    HighScore: any
 
     @CreateDateColumn()
     createdAt: Date
