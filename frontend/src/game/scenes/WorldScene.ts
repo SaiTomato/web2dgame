@@ -22,7 +22,8 @@ export class WorldScene extends Phaser.Scene {
                 id: p.id,
                 x: p.x,
                 y: p.y,
-                color: isLocal ? 0x00ff00 : colorFromId(p.id),
+                // color: isLocal ? 0x00ff00 : colorFromId(p.id),
+                color: colorFromId(p.id),
                 isLocal,
             });
 
