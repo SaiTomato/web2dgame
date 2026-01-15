@@ -25,4 +25,14 @@ export class GamePageComponent implements AfterViewInit, OnDestroy {
     this.socket.disconnect();
     stopGame();
   }
+
+  toggleFullscreen() {
+    const el = this.gameContainer.nativeElement;
+
+    if (!document.fullscreenElement) {
+      el.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
 }

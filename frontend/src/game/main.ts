@@ -14,6 +14,10 @@ export function startGame(container: HTMLElement) {
     width: 800,
     height: 600,
     backgroundColor: '#1e1e1e',
+    scale: {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
     scene: [WorldScene],
   });
 

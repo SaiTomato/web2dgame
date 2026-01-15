@@ -12,8 +12,8 @@ sprite: Phaser.GameObjects.Rectangle;
         this.sprite = scene.add.rectangle(
             config.x,
             config.y,
-            8,
-            16,
+            32,
+            100,
             0xffff00
         );
     }
@@ -22,10 +22,7 @@ sprite: Phaser.GameObjects.Rectangle;
 
         const speed = 8;
         this.sprite.x -= speed;
-        console.log("Wall position:", this.sprite.x); 
-
-
-        if(this.sprite.x<=50){
+        if(this.sprite.x<=0){
             this.sprite.destroy();
             return false;
         }
