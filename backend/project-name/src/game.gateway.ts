@@ -67,6 +67,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
         });
     }
 
+    @SubscribeMessage('playerMove')
+    handleMovement(client: any, payload: any) {
+        this.gameService.updatePlayer(client.id, payload.x, payload.y);
+        this.server.emit('playerMove', {
+            clientId: client.id,
+            payload
+        });
+    }
+
     @SubscribeMessage('chat')
     asynchandleMessage(client: any, payload: any) {
         console.log('クライアントからのチャットメッセージ:', payload);
