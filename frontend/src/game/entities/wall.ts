@@ -38,7 +38,7 @@ private wallgap:number=150;
         const speed = 5 ;
         this.topWall.x -= speed;
         this.bottomWall.x -= speed;
-        if(this.topWall.x<=0){
+        if(this.topWall.x<=-20){
             this.topWall.destroy();
             this.bottomWall.destroy();
             return false;
