@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Player } from '@/game/entities/Player';
+import { colorFromId, Player } from '@/game/entities/Player';
 import { gameEvents, PlayerState } from '../events';
 
 export class WorldScene extends Phaser.Scene {
@@ -16,18 +16,19 @@ export class WorldScene extends Phaser.Scene {
         this.myId = data.selfId;
 
         data.players.forEach((p: any) => {
-            const isSelf = p.id === this.myId;
+            const isLocal = p.id === this.myId;
 
-            const player = new Player(
-            this,
-            p.x,
-            p.y,
-            isSelf        // 👈 只有自己能动 only yourself can move
-            );
+            const player = new Player(this, {
+                id: p.id,
+                x: p.x,
+                y: p.y,
+                color: isLocal ? 0x00ff00 : colorFromId(p.id),
+                isLocal,
+            });
 
             this.players.set(p.id, player);
 
-            if (isSelf) {
+            if (isLocal) {
                 this.player = player; // 👈 关键！　point
             }
         });
@@ -56,10 +57,24 @@ export class WorldScene extends Phaser.Scene {
     }
 
     private onPlayerJoined = ({ player }: { player: PlayerState }) => {
-        if (player.id === this.myId) return;
+        // if (player.id === this.myId) return;
+        if (this.players.has(player.id)) return;
 
-        const newPlayer = new Player(this, player.x, player.y);
+        const isLocal = player.id === this.myId;
+
+        const newPlayer = new Player(this, {
+            id: player.id,
+            x: player.x,
+            y: player.y,
+            color: isLocal ? 0x00ff00 : colorFromId(player.id),
+            isLocal,
+        });
+
         this.players.set(player.id, newPlayer);
+
+        if (isLocal) {
+            this.player = newPlayer;
+        }
     };
 
     private onPlayerLeft = ({ playerId }: { playerId: string }) => {
@@ -68,6 +83,10 @@ export class WorldScene extends Phaser.Scene {
 
         player.destroy();
         this.players.delete(playerId);
+
+        if (playerId === this.myId) {
+            this.player = undefined!;
+        }
     };
 
     override update() {

@@ -1,32 +1,43 @@
 import Phaser from 'phaser';
 
 export class Player {
+  readonly id: string;
+  readonly isLocal: boolean;
+
   sprite: Phaser.GameObjects.Rectangle;
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  private lastX: number;
-  private lastY: number;
-
   constructor(
     private scene: Phaser.Scene,
-    x: number,
-    y: number,
-    enableInput = false // 👈 是否本地玩家
-  ) {
-    this.sprite = scene.add.rectangle(x, y, 32, 32, 0x00ff00);
-
-    if (enableInput) {
-      this.cursors = scene.input.keyboard!.createCursorKeys();
+    config: {
+      id: string;
+      x: number;
+      y: number;
+      color: number;
+      isLocal: boolean;
     }
+  ) {
+    this.id = config.id;
+    this.isLocal = config.isLocal;
 
-    this.lastX = x;
-    this.lastY = y;
+    this.sprite = scene.add.rectangle(
+      config.x,
+      config.y,
+      32,
+      32,
+      config.color
+    );
+
+    if (this.isLocal) {
+      this.cursors = scene.input.keyboard!.createCursorKeys();
+      this.sprite.setStrokeStyle(2, 0xffffff); //add border
+    }
   }
 
   update(): boolean {
-    if (!this.cursors) return false;
+    if (!this.isLocal || !this.cursors) return false;
 
-    const speed = 2;
+    const speed = 4;
     let moved = false;
 
     if (this.cursors.left.isDown) {
@@ -64,4 +75,27 @@ export class Player {
   get y() {
     return this.sprite.y;
   }
+}
+
+// function that set color from player's ID
+export function colorFromId(id: string): number {
+  // let hash = 0;
+  // for (let i = 0; i < id.length; i++) {
+  //   hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  // }
+
+  // // Phaser use 0xRRGGBB
+  // const color = hash & 0x00ffffff;
+  // return color;
+
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const r = (hash >> 0) & 0xff;
+  const g = (hash >> 8) & 0xff;
+  const b = (hash >> 16) & 0xff;
+
+  return (r << 16) | (g << 8) | b;
 }
