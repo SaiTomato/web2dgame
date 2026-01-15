@@ -17,10 +17,9 @@ header {
   flex: 0 0 auto;
 }
 
-/* main 吃掉剩余空间 */
+/* fullfill the rest size */
 main.content {
   flex: 1 1 auto;
   width: 100%;
   height: 100%;
-  display: flex;
 }
