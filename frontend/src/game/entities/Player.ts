@@ -114,10 +114,10 @@ export class Player {
   getBounds(): Phaser.Geom.Rectangle {
     const b = this.sprite.getBounds();
     return new Phaser.Geom.Rectangle( // adjust player bounding size
-      b.x + 4,
-      b.y + 4,
-      b.width - 10,
-      b.height - 10
+      b.x + 6,
+      b.y + 6,
+      b.width - 12,
+      b.height - 12
     );
   }
 }

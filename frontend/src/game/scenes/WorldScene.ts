@@ -21,7 +21,7 @@ export class WorldScene extends Phaser.Scene {
                         y: 0,
                         x: 0
                     },
-                    debug: true // 👈 debug line
+                    // debug: true // 👈 debug line
                 }
             }
         });
