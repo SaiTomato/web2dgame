@@ -37,7 +37,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect    
 
         await this.gameLogRepository.save(log);
 
-        this.gameService.addPlayer(client.id, { id: client.id, x: 0, y: 0 });
+        this.gameService.addPlayer(client.id, { id: client.id, x: 50, y: 300 });
 
         // Crucial: Tell the new player who everyone else is
         client.emit('initPlayers', {

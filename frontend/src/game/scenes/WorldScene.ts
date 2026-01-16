@@ -10,7 +10,19 @@ export class WorldScene extends Phaser.Scene {
     private walls: Wall[] = [];
 
     constructor() {
-        super('world');
+        super({
+            key: 'world',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: {
+                        y: 0,
+                        x: 0
+                    }, // 先设 0，Player 自己控制
+                    debug: true        // 👈 强烈建议先打开
+                }
+            }
+        });
     }
 
     private myId!: string;
@@ -124,7 +136,7 @@ export class WorldScene extends Phaser.Scene {
     }
 
     private spawnWall() {
-        const x = 800;
+        const x = 900;
         const y = Phaser.Math.Between(50, 550);
         const id = Date.now(); // Unique ID based on timestamp 
         this.walls.push(new Wall(this, { id, x, y }));
