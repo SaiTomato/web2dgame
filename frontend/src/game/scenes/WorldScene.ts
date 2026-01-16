@@ -18,8 +18,8 @@ export class WorldScene extends Phaser.Scene {
                     gravity: {
                         y: 0,
                         x: 0
-                    }, // 先设 0，Player 自己控制
-                    debug: true        // 👈 强烈建议先打开
+                    },
+                    debug: true // 👈 debug line
                 }
             }
         });

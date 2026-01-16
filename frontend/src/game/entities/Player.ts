@@ -72,7 +72,7 @@ export class Player {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
     let moved = false;
 
-    // 起飞 / 拍翅膀
+    // 起飞 / 拍翅膀 press up to fly
     if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
       if (!this.started) {
         this.started = true;
@@ -85,7 +85,7 @@ export class Player {
       moved = true;
     }
 
-    // 角色旋转（增强重力感）
+    // 角色旋转（增强重力感） player self rotating
     this.sprite.rotation = Phaser.Math.Clamp(
       body.velocity.y / 600,
       -0.5,
