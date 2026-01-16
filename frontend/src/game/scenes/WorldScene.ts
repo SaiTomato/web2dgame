@@ -8,6 +8,8 @@ export class WorldScene extends Phaser.Scene {
 
     player!: Player;
     private walls: Wall[] = [];
+    private isGameOver = false;
+    private debugGraphics!: Phaser.GameObjects.Graphics;
 
     constructor() {
         super({
@@ -71,6 +73,8 @@ export class WorldScene extends Phaser.Scene {
             callbackScope: this,
             loop: true,
         });
+
+        this.debugGraphics = this.add.graphics();
     }
 
     private onPlayerMove = ({ clientId, payload }: any) => {
@@ -126,6 +130,9 @@ export class WorldScene extends Phaser.Scene {
 
         //WALL
         this.walls = this.walls.filter((wall) => wall.update());
+
+        // 🚨 当たり判定　check
+        this.checkWallCollision();
     }
 
     private onShutdown() {
@@ -140,6 +147,42 @@ export class WorldScene extends Phaser.Scene {
         const y = Phaser.Math.Between(50, 550);
         const id = Date.now(); // Unique ID based on timestamp 
         this.walls.push(new Wall(this, { id, x, y }));
+    }
+
+    private checkWallCollision() {
+        const playerBounds = this.player.getBounds();
+
+        // clear and draw bounding box
+        this.debugGraphics.clear();
+        this.debugGraphics
+            .lineStyle(1, 0xffffff)
+            .strokeRectShape(playerBounds);
+
+        for (const wall of this.walls) {
+            const { top, bottom } = wall.getBounds();
+
+            this.debugGraphics
+                .lineStyle(1, 0xff0000)
+                .strokeRectShape(top)
+                .strokeRectShape(bottom);
+
+            if (
+            Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, top) ||
+            Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, bottom)
+            ) {
+                // this.gameOver();
+                return;
+            }
+        }
+    }
+
+    private gameOver() {
+        if (this.isGameOver) return;
+        this.isGameOver = true;
+        console.log('GAME OVER');
+
+        this.physics.pause();   // stop gravity
+        this.scene.pause();     // stop update
     }
 }
 

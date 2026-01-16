@@ -45,4 +45,11 @@ private wallgap:number=150;
         }
         else return true;
     }
+
+    getBounds() {
+        return {
+            top: this.topWall.getBounds(),
+            bottom: this.bottomWall.getBounds(),
+        };
+    }
 }
